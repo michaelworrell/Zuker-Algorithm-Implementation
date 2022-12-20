@@ -1,7 +1,7 @@
 """
 Fills in recursive case entries in all tables.
 """
-from Traceback import *
+from TracebackObj import *
 from freeEnergy import *
 
 
@@ -20,20 +20,22 @@ def fillWsubset(W, V, minLoop, ijDiff, sequence):
     # Case 1: j unpaired
     case1 = W[i][j-1][0]
 
-    # Case 2: 
-    case2 = float('inf') # Maybe needs to be changed?
+    # Case 2: j paired
+    case2 = float('inf')
     minimizerK = float('inf')
+
+    # Dynamic programming solution to idenify the index along the sequence
+    # which -- when paired with the nucleotide at index j -- results in
+    # minimal free energy (given the minimum loop length constraint).
     for k in range(i, j - minLoop):
-      # TODO EXPLAIN EDGE CASE HERE
       partitionW = W[i][k - 1][0]
       if (i == k):
         partitionW = 0
       partitionV = V[k][j][0]
-      # TODO COMMENTS
       if (partitionW + partitionV < case2):
         minimizerK = k
         case2 = partitionW + partitionV
-    
+
     # Store information about minimum case
     W[i][j][0] = min(case1, case2)
     if case1 < case2:
@@ -41,7 +43,7 @@ def fillWsubset(W, V, minLoop, ijDiff, sequence):
     else:
       W[i][j][1].setCase(2)
       W[i][j][1].setK(minimizerK)
-    
+
   # Return updated table
   return W
 
@@ -59,22 +61,21 @@ def fillVsubset(V, WM, ijDiff, sequence, energyTables):
     j = ijDiff + i
 
     # Case 1: Hairpin Loop
-    if checkComplementary(sequence[i],sequence[j]): 
+    if checkComplementary(sequence[i],sequence[j]):
       eH = findEH(i, j, sequence, energyTables)
       case1 = eH
     else:
       case1 = float('inf')
 
     # Case 2: Stacking Loop
-    if checkComplementary(sequence[i],sequence[j]):  
+    if checkComplementary(sequence[i],sequence[j]):
       eS = findES(i, j, sequence, energyTables)
       case2 = V[i+1][j-1][0] + eS
     else:
       case2 = float('inf')
-    
+
     # Calculate Case 3: Interior Loop / Bulge
     if checkComplementary(sequence[i],sequence[j]):
-      # TODO COMMENTS NEEDED
       minimizerI = float('-inf')
       minimizerJ = float('-inf')
 
@@ -87,11 +88,14 @@ def fillVsubset(V, WM, ijDiff, sequence, energyTables):
             minimizerI, minimizerJ = iPrime, jPrime
     else:
       case3 = float('inf')
-    
+
     # Caclulate Case 4: Multi-loop simplification
     if checkComplementary(sequence[i],sequence[j]):
       case4 = float('inf')
       minimizerK = float('inf')
+      # Note: we did not implement a function that successfully calculated A for this
+      # implementation of Zuker's Algorithm, but made it so that those functions
+      # could be written and utilized in the future. For now, it returns a constant.
       a = getA(i, j, sequence)
       for k in range(i + 1, j):
         if (WM[i+1][k][0] + WM[k+1][j-1][0] + a < case4):
@@ -103,7 +107,6 @@ def fillVsubset(V, WM, ijDiff, sequence, energyTables):
     # Set WM[i][j] equal to the minimum of all
     # valid cases.
     caseMinimum = min(case1, case2, case3, case4)
-    # print(case1, case2, case3, case4)
     V[i][j][0] = caseMinimum
 
     # Store information about minimum case
@@ -117,7 +120,7 @@ def fillVsubset(V, WM, ijDiff, sequence, energyTables):
     else:
       V[i][j][1].setCase(4)
       V[i][j][1].setK(minimizerK)
-  
+
   # Return updated table
   return V
 
@@ -127,17 +130,17 @@ def fillWMsubset(V, WM, ijDiff, sequence, energyTables):
   Fill in a slice of entries in table WM where
   j - i equals ijDiff.
   """
-  
+
   n = len(sequence)
 
   # Fill in entry at WM
   for i in range(0, n - ijDiff):
     # Get value of J
     j = ijDiff + i
-    
-    # print("Filling {0}, {1} in WM".format(i, j))   
 
-    # TODO PLACEHOLDERS FOR FUNCTIONS
+    # Note: we did not implement functions that successfully calculated B or C
+    # for this implementation of Zuker's Algorithm, but made it so that those functions
+    # could be written and utilized in the future. For now, they return constants.
     b, c = getB(i, j, sequence), getC(i, j, sequence)
 
     # Case 1: j unpaired
@@ -146,7 +149,7 @@ def fillWMsubset(V, WM, ijDiff, sequence, energyTables):
     case2 = WM[i+1][j][0] + c
     # Case 3: Closed
     case3 = V[i][j][0] + b
-    
+
     # Calculate Case 4: non-closed
     case4 = float('inf')
     minimizerK = float('inf')
