@@ -15,7 +15,7 @@ freeEnergy.py calculates the energy of an input loop given the stored energy inf
 
 3. Traceback
 
-This is handled by traceback.py and Traceback.py. Traceback.py defines the Traceback objects we used to store traceback information. traceback.py contains code that retrieve the optimal structure computed from filled W, V and WM tables.
+This is handled by traceback.py and TracebackObj.py. TracebackObj.py defines the Traceback objects we used to store traceback information. traceback.py contains code that retrieve the optimal structure computed from filled W, V and WM tables.
 
 4. RNA secondary structure prediction
 
