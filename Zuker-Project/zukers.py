@@ -1,5 +1,5 @@
 import sys
-from Traceback import *
+from TracebackObj import *
 from fillSubsets import *
 from traceback import *
 from EnergyTables import *
