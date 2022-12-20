@@ -1,7 +1,7 @@
 """
 Constructs the optimal set of pairings using traceback
 """
-from Traceback import *
+from TracebackObj import *
 
 
 def tracebackWM(V, WM, i, j):
